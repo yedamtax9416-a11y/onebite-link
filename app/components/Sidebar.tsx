@@ -5,12 +5,14 @@ import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import { useFolders, type Folder } from "../context/FoldersContext";
 import DeleteFolderModal from "./DeleteFolderModal";
+import EditFolderModal from "./EditFolderModal";
 
 export default function Sidebar() {
   const pathname = usePathname();
   const router = useRouter();
   const { folders, deleteFolder } = useFolders();
   const [folderToDelete, setFolderToDelete] = useState<Folder | null>(null);
+  const [folderToEdit, setFolderToEdit] = useState<Folder | null>(null);
 
   const handleConfirmDelete = () => {
     if (!folderToDelete) return;
@@ -51,6 +53,22 @@ export default function Sidebar() {
               </Link>
               <button
                 type="button"
+                onClick={() => setFolderToEdit(folder)}
+                aria-label={`${folder.name} 폴더 수정`}
+                className="ml-1 p-1 rounded opacity-0 group-hover:opacity-100 text-gray-400 hover:text-blue-600 hover:bg-blue-50 transition-colors shrink-0"
+              >
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  viewBox="0 0 20 20"
+                  fill="currentColor"
+                  className="w-4 h-4"
+                >
+                  <path d="m5.433 13.917 1.262-3.155A4 4 0 0 1 7.58 9.42l6.92-6.918a2.121 2.121 0 0 1 3 3l-6.92 6.918c-.383.383-.84.685-1.343.886l-3.154 1.262a.5.5 0 0 1-.65-.65Z" />
+                  <path d="M3.5 5.75c0-.69.56-1.25 1.25-1.25H10A.75.75 0 0 0 10 3H4.75A2.75 2.75 0 0 0 2 5.75v9.5A2.75 2.75 0 0 0 4.75 18h9.5A2.75 2.75 0 0 0 17 15.25V10a.75.75 0 0 0-1.5 0v5.25c0 .69-.56 1.25-1.25 1.25h-9.5c-.69 0-1.25-.56-1.25-1.25v-9.5Z" />
+                </svg>
+              </button>
+              <button
+                type="button"
                 onClick={() => setFolderToDelete(folder)}
                 aria-label={`${folder.name} 폴더 삭제`}
                 className="mr-2 p-1 rounded opacity-0 group-hover:opacity-100 text-gray-400 hover:text-red-600 hover:bg-red-50 transition-colors shrink-0"
@@ -72,6 +90,13 @@ export default function Sidebar() {
           );
         })}
       </div>
+      {folderToEdit && (
+        <EditFolderModal
+          folderId={folderToEdit.id}
+          initialName={folderToEdit.name}
+          onClose={() => setFolderToEdit(null)}
+        />
+      )}
       {folderToDelete && (
         <DeleteFolderModal
           folderName={folderToDelete.name}

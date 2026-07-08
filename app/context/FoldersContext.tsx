@@ -11,6 +11,7 @@ export type Folder = {
 type FoldersContextValue = {
   folders: Folder[];
   addFolder: (name: string) => void;
+  updateFolder: (id: number, name: string) => void;
   deleteFolder: (id: number) => void;
 };
 
@@ -26,12 +27,20 @@ export function FoldersProvider({ children }: { children: ReactNode }) {
     });
   };
 
+  const updateFolder = (id: number, name: string) => {
+    setFolders((prev) =>
+      prev.map((folder) => (folder.id === id ? { ...folder, name } : folder))
+    );
+  };
+
   const deleteFolder = (id: number) => {
     setFolders((prev) => prev.filter((folder) => folder.id !== id));
   };
 
   return (
-    <FoldersContext.Provider value={{ folders, addFolder, deleteFolder }}>
+    <FoldersContext.Provider
+      value={{ folders, addFolder, updateFolder, deleteFolder }}
+    >
       {children}
     </FoldersContext.Provider>
   );
