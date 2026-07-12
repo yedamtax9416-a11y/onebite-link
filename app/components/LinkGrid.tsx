@@ -22,6 +22,7 @@ export default function LinkGrid({ folderId }: Props) {
         return (
           <LinkCard
             key={link.id}
+            id={link.id}
             title={link.title}
             url={link.url}
             description={link.description}
