@@ -1,4 +1,7 @@
-import { folders, links } from "../lib/data";
+"use client";
+
+import { useFolders } from "../context/FoldersContext";
+import { useLinks } from "../context/LinksContext";
 import LinkCard from "./LinkCard";
 
 type Props = {
@@ -6,6 +9,8 @@ type Props = {
 };
 
 export default function LinkGrid({ folderId }: Props) {
+  const { folders } = useFolders();
+  const { links } = useLinks();
   const filtered = folderId
     ? links.filter((link) => link.folderId === folderId)
     : links;
@@ -20,6 +25,7 @@ export default function LinkGrid({ folderId }: Props) {
             title={link.title}
             url={link.url}
             description={link.description}
+            thumbnail={link.thumbnail}
             folder={folder?.name ?? ""}
           />
         );
