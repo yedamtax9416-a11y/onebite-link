@@ -28,6 +28,7 @@ export default function LinkGrid({ folderId }: Props) {
             description={link.description}
             thumbnail={link.thumbnail}
             folder={folder?.name ?? ""}
+            folderId={link.folderId}
           />
         );
       })}

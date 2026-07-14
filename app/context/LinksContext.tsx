@@ -20,9 +20,16 @@ type NewLinkInput = {
   folderId: number;
 };
 
+type LinkUpdateInput = {
+  title: string;
+  description?: string;
+  folderId: number;
+};
+
 type LinksContextValue = {
   links: LinkItem[];
   addLink: (input: NewLinkInput) => void;
+  updateLink: (id: number, input: LinkUpdateInput) => void;
   deleteLink: (id: number) => void;
 };
 
@@ -38,12 +45,18 @@ export function LinksProvider({ children }: { children: ReactNode }) {
     });
   };
 
+  const updateLink = (id: number, input: LinkUpdateInput) => {
+    setLinks((prev) =>
+      prev.map((link) => (link.id === id ? { ...link, ...input } : link))
+    );
+  };
+
   const deleteLink = (id: number) => {
     setLinks((prev) => prev.filter((link) => link.id !== id));
   };
 
   return (
-    <LinksContext.Provider value={{ links, addLink, deleteLink }}>
+    <LinksContext.Provider value={{ links, addLink, updateLink, deleteLink }}>
       {children}
     </LinksContext.Provider>
   );
