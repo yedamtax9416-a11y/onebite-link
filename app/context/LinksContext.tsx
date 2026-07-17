@@ -29,7 +29,7 @@ type LinkUpdateInput = {
 type LinksContextValue = {
   links: LinkItem[];
   addLink: (input: NewLinkInput) => Promise<void>;
-  updateLink: (id: number, input: LinkUpdateInput) => void;
+  updateLink: (id: number, input: LinkUpdateInput) => Promise<void>;
   deleteLink: (id: number) => void;
 };
 
@@ -91,7 +91,21 @@ export function LinksProvider({ children }: { children: ReactNode }) {
     ]);
   };
 
-  const updateLink = (id: number, input: LinkUpdateInput) => {
+  const updateLink = async (id: number, input: LinkUpdateInput) => {
+    const supabase = createClient();
+    const { error } = await supabase
+      .from("links")
+      .update({
+        title: input.title,
+        description: input.description,
+        folder_id: input.folderId,
+      })
+      .eq("id", id);
+
+    if (error) {
+      throw new Error("링크 수정에 실패했습니다.");
+    }
+
     setLinks((prev) =>
       prev.map((link) => (link.id === id ? { ...link, ...input } : link))
     );

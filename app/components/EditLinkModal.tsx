@@ -8,7 +8,7 @@ type Props = {
   initialDescription?: string;
   initialFolderId: number;
   onClose: () => void;
-  onSave: (input: { title: string; description?: string; folderId: number }) => void;
+  onSave: (input: { title: string; description?: string; folderId: number }) => Promise<void>;
 };
 
 export default function EditLinkModal({
@@ -23,10 +23,10 @@ export default function EditLinkModal({
   const [description, setDescription] = useState(initialDescription ?? "");
   const [folderId, setFolderId] = useState(String(initialFolderId));
 
-  const handleSave = () => {
+  const handleSave = async () => {
     const trimmedTitle = title.trim();
     if (!trimmedTitle) return;
-    onSave({
+    await onSave({
       title: trimmedTitle,
       description: description.trim(),
       folderId: Number(folderId),
