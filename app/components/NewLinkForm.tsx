@@ -37,7 +37,7 @@ export default function NewLinkForm() {
         throw new Error(data.error ?? "링크 정보를 가져오지 못했습니다.");
       }
 
-      addLink({
+      await addLink({
         title: data.title,
         url: data.url,
         description: data.description,

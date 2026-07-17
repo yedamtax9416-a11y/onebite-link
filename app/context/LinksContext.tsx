@@ -1,7 +1,7 @@
 "use client";
 
-import { createContext, useContext, useState, ReactNode } from "react";
-import { links as initialLinks } from "../lib/data";
+import { createContext, useContext, useEffect, useState, ReactNode } from "react";
+import { createClient } from "../../utils/supabase/client";
 
 export type LinkItem = {
   id: number;
@@ -28,7 +28,7 @@ type LinkUpdateInput = {
 
 type LinksContextValue = {
   links: LinkItem[];
-  addLink: (input: NewLinkInput) => void;
+  addLink: (input: NewLinkInput) => Promise<void>;
   updateLink: (id: number, input: LinkUpdateInput) => void;
   deleteLink: (id: number) => void;
 };
@@ -36,13 +36,59 @@ type LinksContextValue = {
 const LinksContext = createContext<LinksContextValue | null>(null);
 
 export function LinksProvider({ children }: { children: ReactNode }) {
-  const [links, setLinks] = useState<LinkItem[]>(initialLinks);
+  const [links, setLinks] = useState<LinkItem[]>([]);
 
-  const addLink = (input: NewLinkInput) => {
-    setLinks((prev) => {
-      const nextId = prev.length > 0 ? Math.max(...prev.map((l) => l.id)) + 1 : 1;
-      return [...prev, { id: nextId, ...input }];
-    });
+  useEffect(() => {
+    const supabase = createClient();
+    supabase
+      .from("links")
+      .select("id, url, title, description, thumbnail_url, folder_id")
+      .order("created_at", { ascending: true })
+      .then(({ data }) => {
+        if (data) {
+          setLinks(
+            data.map((link) => ({
+              id: link.id,
+              title: link.title,
+              url: link.url,
+              description: link.description ?? undefined,
+              thumbnail: link.thumbnail_url ?? undefined,
+              folderId: link.folder_id,
+            }))
+          );
+        }
+      });
+  }, []);
+
+  const addLink = async (input: NewLinkInput) => {
+    const supabase = createClient();
+    const { data, error } = await supabase
+      .from("links")
+      .insert({
+        url: input.url,
+        title: input.title,
+        description: input.description,
+        thumbnail_url: input.thumbnail,
+        folder_id: input.folderId,
+      })
+      .select("id, url, title, description, thumbnail_url, folder_id")
+      .single();
+
+    if (error || !data) {
+      throw new Error("링크 저장에 실패했습니다.");
+    }
+
+    setLinks((prev) => [
+      ...prev,
+      {
+        id: data.id,
+        title: data.title,
+        url: data.url,
+        description: data.description ?? undefined,
+        thumbnail: data.thumbnail_url ?? undefined,
+        folderId: data.folder_id,
+      },
+    ]);
   };
 
   const updateLink = (id: number, input: LinkUpdateInput) => {
