@@ -12,7 +12,7 @@ type FoldersContextValue = {
   folders: Folder[];
   addFolder: (name: string) => Promise<void>;
   updateFolder: (id: number, name: string) => Promise<void>;
-  deleteFolder: (id: number) => void;
+  deleteFolder: (id: number) => Promise<void>;
 };
 
 const FoldersContext = createContext<FoldersContextValue | null>(null);
@@ -56,7 +56,11 @@ export function FoldersProvider({ children }: { children: ReactNode }) {
     );
   };
 
-  const deleteFolder = (id: number) => {
+  const deleteFolder = async (id: number) => {
+    const supabase = createClient();
+    const { error } = await supabase.from("folders").delete().eq("id", id);
+
+    if (error) return;
     setFolders((prev) => prev.filter((folder) => folder.id !== id));
   };
 

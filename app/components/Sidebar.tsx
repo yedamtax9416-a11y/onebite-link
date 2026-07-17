@@ -14,9 +14,9 @@ export default function Sidebar() {
   const [folderToDelete, setFolderToDelete] = useState<Folder | null>(null);
   const [folderToEdit, setFolderToEdit] = useState<Folder | null>(null);
 
-  const handleConfirmDelete = () => {
+  const handleConfirmDelete = async () => {
     if (!folderToDelete) return;
-    deleteFolder(folderToDelete.id);
+    await deleteFolder(folderToDelete.id);
     if (pathname === `/folder/${folderToDelete.id}`) {
       router.push("/");
     }
