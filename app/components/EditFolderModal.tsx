@@ -13,10 +13,10 @@ export default function EditFolderModal({ folderId, initialName, onClose }: Prop
   const [name, setName] = useState(initialName);
   const { updateFolder } = useFolders();
 
-  const handleSave = () => {
+  const handleSave = async () => {
     const trimmed = name.trim();
     if (!trimmed) return;
-    updateFolder(folderId, trimmed);
+    await updateFolder(folderId, trimmed);
     onClose();
   };
 

@@ -11,7 +11,7 @@ export type Folder = {
 type FoldersContextValue = {
   folders: Folder[];
   addFolder: (name: string) => Promise<void>;
-  updateFolder: (id: number, name: string) => void;
+  updateFolder: (id: number, name: string) => Promise<void>;
   deleteFolder: (id: number) => void;
 };
 
@@ -43,7 +43,14 @@ export function FoldersProvider({ children }: { children: ReactNode }) {
     setFolders((prev) => [...prev, data]);
   };
 
-  const updateFolder = (id: number, name: string) => {
+  const updateFolder = async (id: number, name: string) => {
+    const supabase = createClient();
+    const { error } = await supabase
+      .from("folders")
+      .update({ name })
+      .eq("id", id);
+
+    if (error) return;
     setFolders((prev) =>
       prev.map((folder) => (folder.id === id ? { ...folder, name } : folder))
     );
