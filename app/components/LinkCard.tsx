@@ -30,8 +30,8 @@ export default function LinkCard({
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
   const showThumbnail = Boolean(thumbnail) && !imageFailed;
 
-  const handleConfirmDelete = () => {
-    deleteLink(id);
+  const handleConfirmDelete = async () => {
+    await deleteLink(id);
     setIsDeleteModalOpen(false);
   };
 

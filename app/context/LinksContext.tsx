@@ -30,7 +30,7 @@ type LinksContextValue = {
   links: LinkItem[];
   addLink: (input: NewLinkInput) => Promise<void>;
   updateLink: (id: number, input: LinkUpdateInput) => Promise<void>;
-  deleteLink: (id: number) => void;
+  deleteLink: (id: number) => Promise<void>;
 };
 
 const LinksContext = createContext<LinksContextValue | null>(null);
@@ -111,7 +111,14 @@ export function LinksProvider({ children }: { children: ReactNode }) {
     );
   };
 
-  const deleteLink = (id: number) => {
+  const deleteLink = async (id: number) => {
+    const supabase = createClient();
+    const { error } = await supabase.from("links").delete().eq("id", id);
+
+    if (error) {
+      throw new Error("링크 삭제에 실패했습니다.");
+    }
+
     setLinks((prev) => prev.filter((link) => link.id !== id));
   };
 
